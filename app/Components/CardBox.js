@@ -8,8 +8,9 @@ import Button from "@mui/material/Button";
 import Typography from "@mui/material/Typography";
 import Skeleton from "@mui/material/Skeleton";
 
-const CardBox = ({ products, onDeleteClick }) => {
+const CardBox = ({ products, onDeleteClick, onUpdateClick }) => {
   const data = [1, 2, 3, 4, 5, 6];
+
   return (
     <div>
       <div className="grid grid-cols-3 gap-4 mt-10 mb-30 text-center relative">
@@ -59,6 +60,7 @@ const CardBox = ({ products, onDeleteClick }) => {
                     fontWeight: "bold",
                     padding: "10px",
                   }}
+                  onClick={() => onUpdateClick(product)}
                 >
                   Update
                 </Button>

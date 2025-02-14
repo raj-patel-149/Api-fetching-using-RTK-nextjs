@@ -11,6 +11,7 @@ import {
   useDeleteProductMutation,
   useGetCategoriesQuery,
   useGetProductQuery,
+  useUpdateProductMutation,
 } from "@/store/apiSlice";
 
 const CardContainer = ({ category }) => {
@@ -19,12 +20,13 @@ const CardContainer = ({ category }) => {
   });
 
   const [deleteProduct, { isLoading: deleting }] = useDeleteProductMutation();
+  const [updateProduct, { isLoading: updating }] = useUpdateProductMutation();
 
   const [localProduct, setLocalProduct] = useState(product || []);
   const [deleteOpen, setDeleteOpen] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [addOpen, setAddOpen] = useState(false);
-  const [loading, setLoading] = useState(true);
+  const [updateOpen, setUpdateOpen] = useState(false);
 
   useEffect(() => {
     setLocalProduct(product);
@@ -49,7 +51,7 @@ const CardContainer = ({ category }) => {
       await deleteProduct(id).unwrap();
       setLocalProduct((prev) => prev.filter((p) => p.id !== id));
       setDeleteOpen(false);
-      setSelectedProduct(null); // Reset after deletion
+      setSelectedProduct(null);
     } catch (error) {
       console.error("Delete failed:", error);
     }
@@ -68,6 +70,37 @@ const CardContainer = ({ category }) => {
     setAddOpen(false);
   };
 
+  const handleUpdateClick = (product) => {
+    setSelectedProduct(product);
+    setUpdateOpen(true);
+  };
+
+  const handleConfirmUpdate = async (updatedData) => {
+    try {
+      let imageUrl = selectedProduct.image;
+
+      if (updatedData.image instanceof File) {
+        imageUrl = URL.createObjectURL(updatedData.image);
+      }
+
+      const updatedProduct = {
+        ...selectedProduct,
+        ...updatedData,
+        image: imageUrl,
+      };
+
+      const id = selectedProduct.id;
+      await updateProduct({ id, ...updatedProduct }).unwrap();
+      setLocalProduct((prev) =>
+        prev.map((p) => (p.id === id ? { ...p, ...updatedData } : p))
+      );
+      setUpdateOpen(false);
+      setSelectedProduct(null);
+    } catch (error) {
+      console.error("Update failed:", error);
+    }
+  };
+
   return (
     <div className="mt-5">
       <Button
@@ -80,7 +113,8 @@ const CardContainer = ({ category }) => {
       </Button>
       <CardBox
         products={localProduct}
-        onDeleteClick={(product) => handleDeleteClick(product)} // Pass the full product object
+        onDeleteClick={(product) => handleDeleteClick(product)}
+        onUpdateClick={handleUpdateClick}
         loading={isLoading || deleting}
       />
 
@@ -97,15 +131,12 @@ const CardContainer = ({ category }) => {
         onConfirm={handleConfirmAdd}
       />
 
-      {/* <UpdateDialog
+      <UpdateDialog
         open={updateOpen}
-        product={updateProduct}
+        product={selectedProduct}
         onClose={() => setUpdateOpen(false)}
-        onConfirm={handleUpdateConfirm}
+        onConfirm={handleConfirmUpdate}
       />
-      
-
-      */}
     </div>
   );
 };

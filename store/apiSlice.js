@@ -12,11 +12,17 @@ export const apiSlice = createApi({
     }),
     deleteProduct: builder.mutation({
       query: (id) => ({
-        url: `products/${id}`,
+        url: `/products/${id}`,
         method: "DELETE",
       }),
     }),
-    updateProduct: builder.mutation({}),
+    updateProduct: builder.mutation({
+      query: ({ id, ...updatedData }) => ({
+        url: `/products/${id}`,
+        method: "PUT",
+        body: updatedData,
+      }),
+    }),
   }),
 });
 
