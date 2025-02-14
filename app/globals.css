@@ -1,0 +1,30 @@
+@import "tailwindcss";
+
+@tailwind utilities;
+
+:root {
+  --font-poppins: "Poppins", sans-serif;
+  --font-work-sans: "Work Sans", sans-serif; /* Correct the font name */
+}
+
+/* Tailwind custom font classes */
+.font-poppins {
+  font-family: var(--font-poppins);
+}
+
+.font-work-sans {
+  /* Fixed class name */
+  font-family: var(--font-work-sans);
+}
+
+@layer utilities {
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
+  }
+}

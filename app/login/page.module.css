@@ -1,0 +1,99 @@
+.main {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.container {
+  height: 500px;
+  width: 800px;
+  border: 2px solid black;
+  margin-top: 40px;
+  display: flex;
+  justify-content: space-around;
+  box-sizing: border-box;
+  border-radius: 6px;
+}
+
+.image {
+  height: 100%;
+}
+.field {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  margin: 0 40px 0 40px;
+}
+
+.inputs {
+  display: flex;
+  flex-direction: column;
+}
+
+.input {
+  margin: 20px 0 0 0;
+  height: 20px;
+  border: 3px solid black;
+  padding: 5px;
+  cursor: pointer;
+}
+
+.field form .forgot {
+  color: rgb(35, 179, 208);
+  font-size: 13px;
+  align-self: flex-end;
+  margin-top: 15px;
+  text-align: right;
+  cursor: pointer;
+}
+
+.submit {
+  width: 100%;
+  height: 45px;
+  border-radius: 10%;
+  border: 4px solid black;
+  background-color: rgb(167, 233, 239);
+  cursor: pointer;
+}
+
+.line {
+  width: 80%;
+  border: none;
+  height: 1px;
+  background-color: black;
+  margin: 20px 0 0 0;
+}
+
+.or {
+  font-size: 12px;
+  margin-top: 0;
+}
+
+.register {
+  margin-top: 2px;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.inputContainer {
+  position: relative;
+  width: 100%;
+  display: flex;
+  align-items: center;
+}
+
+.input {
+  width: 100%;
+  padding: 10px 40px 10px 35px;
+  border: 2px solid black;
+  border-radius: 5px;
+}
+
+.icon {
+  position: absolute;
+  right: 10px;
+  margin: 20px 10px 0 0;
+  font-size: 16px;
+  color: gray;
+  cursor: pointer;
+}
