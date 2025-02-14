@@ -1,46 +1,61 @@
 "use client";
+
 import React, { useEffect, useState } from "react";
+import { useForm, Controller } from "react-hook-form";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
+import { Input } from "@mui/material";
 
 const UpdateDialog = ({ open, product, onClose, onConfirm }) => {
-  const [updatedData, setUpdatedData] = useState({
-    title: "",
-    price: "",
-    description: "",
-    image: "",
-    imagePreview: "",
+  const {
+    control,
+    register,
+    handleSubmit,
+    setValue,
+    reset,
+    trigger,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      title: "",
+      price: "",
+      description: "",
+      image: null,
+    },
   });
+
+  const [imagePreview, setImagePreview] = useState("");
 
   useEffect(() => {
     if (product) {
-      setUpdatedData({
+      reset({
         title: product.title || "",
         price: product.price || "",
         description: product.description || "",
-        image: product.image || "",
-        imagePreview: product.image || "",
+        image: product.image || null,
       });
-    }
-  }, [product]);
 
-  const handleChange = (e) => {
-    setUpdatedData({ ...updatedData, [e.target.name]: e.target.value });
-  };
-
-  const handleImageChange = (e) => {
-    const file = e.target.files[0];
-    if (file) {
-      setUpdatedData({
-        ...updatedData,
-        image: file,
-        imagePreview: URL.createObjectURL(file),
-      });
+      setImagePreview(product.image || ""); // Set preview if image exists
     }
+  }, [product, reset]);
+
+  const onSubmit = (data) => {
+    if (!data.image) {
+      console.warn("No image selected");
+    }
+
+    const updatedProduct = {
+      ...data,
+      image: data.image instanceof File ? data.image : product.image, // Keep original if not changed
+    };
+
+    console.log("Updated Data:", updatedProduct);
+    onConfirm(updatedProduct);
+    onClose();
   };
 
   return (
@@ -48,56 +63,78 @@ const UpdateDialog = ({ open, product, onClose, onConfirm }) => {
       <DialogTitle className="bg-black text-white text-center w-[97%]">
         Update Product
       </DialogTitle>
-      <DialogContent className="mt-2">
-        <TextField
-          label="Title"
-          name="title"
-          value={updatedData.title}
-          onChange={handleChange}
-          fullWidth
-          margin="normal"
-        />
-        <TextField
-          label="Price"
-          name="price"
-          type="number"
-          value={updatedData.price}
-          onChange={handleChange}
-          fullWidth
-          margin="normal"
-        />
-        <TextField
-          label="Description"
-          name="description"
-          value={updatedData.description}
-          onChange={handleChange}
-          fullWidth
-          margin="normal"
-          multiline
-          rows={3}
-        />
-        {updatedData.imagePreview && (
-          <img
-            src={updatedData.imagePreview}
-            alt="Preview"
-            style={{ width: "150px", maxHeight: "150px", marginTop: "10px" }}
+      <DialogContent>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <TextField
+            label="Title"
+            {...register("title", { required: "Title is required" })}
+            fullWidth
+            margin="normal"
+            error={!!errors.title}
+            helperText={errors.title?.message}
           />
-        )}
-        <input
-          type="file"
-          name="image"
-          accept="image/*"
-          onChange={handleImageChange}
-          style={{ marginTop: "10px" }}
-          className="border-2 border-black p-2 cursor-pointer"
-        />
+
+          <TextField
+            label="Price"
+            type="number"
+            {...register("price", { required: "Price is required" })}
+            fullWidth
+            margin="normal"
+            error={!!errors.price}
+            helperText={errors.price?.message}
+          />
+
+          <TextField
+            label="Description"
+            {...register("description", {
+              required: "Description is required",
+            })}
+            fullWidth
+            margin="normal"
+            multiline
+            rows={3}
+            error={!!errors.description}
+            helperText={errors.description?.message}
+          />
+
+          {imagePreview && (
+            <img
+              src={imagePreview}
+              alt="Preview"
+              style={{ width: "150px", maxHeight: "150px", marginTop: "10px" }}
+            />
+          )}
+
+          <Controller
+            name="image"
+            control={control}
+            render={({ field: { onChange, value, ...field } }) => (
+              <Input
+                {...field}
+                type="file"
+                accept="image/*"
+                onChange={(e) => {
+                  const file = e.target.files[0];
+                  if (file) {
+                    setValue("image", file, { shouldValidate: true });
+                    setImagePreview(URL.createObjectURL(file)); // Update preview
+                    trigger("image");
+                    onChange(file);
+                  }
+                }}
+                style={{ marginTop: "10px" }}
+              />
+            )}
+          />
+
+          <DialogActions>
+            <Button onClick={onClose}>Cancel</Button>
+            <Button type="submit" autoFocus>
+              Update
+            </Button>
+          </DialogActions>
+        </form>
       </DialogContent>
-      <DialogActions>
-        <Button onClick={onClose}>Cancel</Button>
-        <Button onClick={() => onConfirm(updatedData)} autoFocus>
-          Update
-        </Button>
-      </DialogActions>
     </Dialog>
   );
 };

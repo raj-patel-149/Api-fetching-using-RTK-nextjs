@@ -65,7 +65,9 @@ const CardContainer = ({ category }) => {
     const newProductWithID = {
       ...newProduct,
       id: Date.now(),
+      image: URL.createObjectURL(newProduct.image),
     };
+
     setLocalProduct((prevProducts) => [newProductWithID, ...prevProducts]);
     setAddOpen(false);
   };
@@ -83,17 +85,18 @@ const CardContainer = ({ category }) => {
         imageUrl = URL.createObjectURL(updatedData.image);
       }
 
+      console.log("Updated image URL: ", imageUrl);
+
       const updatedProduct = {
         ...selectedProduct,
         ...updatedData,
         image: imageUrl,
       };
 
-      const id = selectedProduct.id;
-      await updateProduct({ id, ...updatedProduct }).unwrap();
       setLocalProduct((prev) =>
-        prev.map((p) => (p.id === id ? { ...p, ...updatedData } : p))
+        prev.map((p) => (p.id === selectedProduct.id ? updatedProduct : p))
       );
+
       setUpdateOpen(false);
       setSelectedProduct(null);
     } catch (error) {
